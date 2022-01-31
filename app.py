@@ -1,32 +1,31 @@
 import streamlit as st
-from streamlit_folium import folium_static
+# from streamlit_folium import folium_static
 import folium
-import geopandas as gpd
+# import geopandas as gpd
 import json
 import pydeck as pdk
-import geemap.eefolium as geemap
+# import geemap.eefolium as geemap
 
 uploaded_file = st.sidebar.file_uploader(label="Upload GeoJSON file", type=['geojson'], accept_multiple_files=False)
 if uploaded_file is not None:
     data = json.load(uploaded_file)
-    gdf = gpd.GeoDataFrame.from_features(data['features'])[['geometry']]
-    point = data['features'][0]['geometry']['coordinates'][0][0][0]
-
+    lon  = data['features'][0]['geometry']['coordinates'][0][0][0]
+    lat  = data['features'][0]['geometry']['coordinates'][0][0][1]
     st.pydeck_chart(pdk.Deck(
         map_provider="mapbox",
         map_style=pdk.map_styles.SATELLITE,
         api_keys  = { "mapbox": "pk.eyJ1IjoiZ3JvbDIwMjAiLCJhIjoiY2tvajI0MW5pMDMxMDJ3bzdpN3dzbHBidyJ9.jxYSuCXT1u1eFKMMWwSFVg"},
         initial_view_state=pdk.ViewState(
-            latitude  = 51.6693206,
-            longitude = -9.002953,
+            latitude  = lat,
+            longitude = lon,
             zoom=12,
             pitch=0,
         ),
         layers=[
             pdk.Layer(
                 'GeoJsonLayer',
-                data=gdf,
-                get_fill_color=[0, 0, 0],
+                data=data,
+                get_fill_color=[0, 0, 0]
             ),
         ],
     ))
